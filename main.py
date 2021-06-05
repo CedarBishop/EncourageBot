@@ -1,5 +1,6 @@
 import os
 import discord
+from commands import *
 
 client = discord.Client()
 
@@ -12,8 +13,8 @@ async def on_message(message):
   if message.author == client.user:
     return
   
-  if message.content.startswith('$hello'):
-    await message.channel.send('Hello!')
+  if message.content.startswith('!greet'):
+    await greet(message, client)
 
 my_secret = os.environ['TOKEN']
 client.run(my_secret)
