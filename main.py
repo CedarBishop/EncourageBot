@@ -3,6 +3,8 @@ import discord
 from commands import *
 import random
 from replit import db
+from keep_alive import keep_alive
+
 
 
 client = discord.Client()
@@ -15,6 +17,9 @@ starter_encouragements = [
   "Hang in there.",
   "You are a great person!"
 ]
+
+if "responding" not in db.keys():
+  db["responding"] = True
 
 def update_encouragements(encouraging_message):
   if "encouragements" in db.keys():
@@ -69,8 +74,21 @@ async def on_message(message):
     encouragements = db["encouragements"]
     await message.channel.send(encouragements)
 
-  if any(word in msg for word in sad_words):
-    await message.channel.send(random.choice(options))
+  if msg.startswith('!responding'):
+    value = msg.split("responding ",1)[1]
+    if value.lower() == "true":
+      db["responding"] = True
+      await message.channel.send("Responding is on.")
+    else:
+      db["responding"] = False
+      await message.channel.send("Responding is off.")
+
+
+  if db["responding"]:
+    if any(word in msg for word in sad_words):
+      await message.channel.send(random.choice(options))
+
+keep_alive()
 
 my_secret = os.environ['TOKEN']
 client.run(my_secret)
